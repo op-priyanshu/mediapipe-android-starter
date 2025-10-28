@@ -22,6 +22,7 @@ import com.google.mediapipe.framework.image.MPImage
 import com.google.mediapipe.tasks.core.BaseOptions
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarker
+import com.example.myapplication.ui.OverlayView
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var previewView: PreviewView
     private lateinit var poseLandmarker: PoseLandmarker
+    private lateinit var overlayView: OverlayView
     private var cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,8 +41,18 @@ class MainActivity : AppCompatActivity() {
         setupEdgeToEdge()
         initCameraExecutor()
         previewView = findViewById(R.id.previewCam)
+        overlayView = findViewById(R.id.overlay)
 
         requestCameraPermission()
+
+        findViewById<android.widget.ImageButton>(R.id.camera_switch_button).setOnClickListener {
+            cameraSelector = if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
+                CameraSelector.DEFAULT_FRONT_CAMERA
+            } else {
+                CameraSelector.DEFAULT_BACK_CAMERA
+            }
+            setupCamera()
+        }
     }
 
     private fun setupEdgeToEdge() {
@@ -64,14 +76,9 @@ class MainActivity : AppCompatActivity() {
         val options = PoseLandmarker.PoseLandmarkerOptions.builder()
             .setBaseOptions(baseOptions)
             .setRunningMode(RunningMode.LIVE_STREAM)
-            .setResultListener { result, _ ->    //Todo: You will get landmarks here and use them for further processing
-                var count = 0
-                result.landmarks().forEach { landmark ->
-                    landmark.forEach{
-                        Log.d("PoseLandmarks", "landmark: $count , x = ${it.x()}, y = ${it.y()}, z = ${it.z()}")
-                        count++
-                        //This will log all the pose landmarks in each frame
-                    }
+            .setResultListener { result, _ ->
+                runOnUiThread {
+                    overlayView.setResults(result)
                 }
             }.build()
         poseLandmarker = PoseLandmarker.createFromOptions(this, options)
