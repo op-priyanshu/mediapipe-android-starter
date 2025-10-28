@@ -6,8 +6,8 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
+import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarker
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarkerResult
-import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarksConnections
 
 class OverlayView @JvmOverloads constructor(
     context: Context,
@@ -46,7 +46,8 @@ class OverlayView @JvmOverloads constructor(
                     )
                 }
 
-                PoseLandmarksConnections.POSE_LANDMARKS.forEach { connection ->
+                // Use the public POSE_LANDMARKS from the PoseLandmarker class
+                PoseLandmarker.POSE_LANDMARKS.forEach { connection ->
                     canvas.drawLine(
                         landmark[connection.start()].x() * width,
                         landmark[connection.start()].y() * height,
