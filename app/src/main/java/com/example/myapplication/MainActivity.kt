@@ -76,9 +76,13 @@ class MainActivity : AppCompatActivity() {
         val options = PoseLandmarker.PoseLandmarkerOptions.builder()
             .setBaseOptions(baseOptions)
             .setRunningMode(RunningMode.LIVE_STREAM)
-            .setResultListener { result, _ ->
+            .setResultListener { result, image ->
                 runOnUiThread {
-                    overlayView.setResults(result)
+                    overlayView.setResults(
+                        result,
+                        image.height,
+                        image.width
+                    )
                 }
             }.build()
         poseLandmarker = PoseLandmarker.createFromOptions(this, options)
@@ -121,17 +125,16 @@ class MainActivity : AppCompatActivity() {
         val mediaImage = imageProxy.image
         if (mediaImage != null && imageProxy.format == ImageFormat.YUV_420_888) {
             val bitmap = yuvToRgb(mediaImage, imageProxy)
-            val mpImage: MPImage
-            if (cameraSelector == CameraSelector.DEFAULT_FRONT_CAMERA){
-                val matrix = Matrix().apply {
-                    postRotate(imageProxy.imageInfo.rotationDegrees.toFloat())
-                    postScale(-1f, 1f, bitmap.width.toFloat(), bitmap.height.toFloat()) // Mirror flip
+            val matrix = Matrix().apply {
+                postRotate(imageProxy.imageInfo.rotationDegrees.toFloat())
+                if (cameraSelector == CameraSelector.DEFAULT_FRONT_CAMERA) {
+                    postScale(-1f, 1f, bitmap.width / 2f, bitmap.height / 2f)
                 }
-                val rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-                mpImage = BitmapImageBuilder(rotatedBitmap).build()
-            } else {
-                mpImage = BitmapImageBuilder(bitmap).build()
             }
+            val rotatedBitmap = Bitmap.createBitmap(
+                bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true
+            )
+            val mpImage = BitmapImageBuilder(rotatedBitmap).build()
             val timestamp = imageProxy.imageInfo.timestamp
             poseLandmarker.detectAsync(mpImage, timestamp)
             imageProxy.close()
