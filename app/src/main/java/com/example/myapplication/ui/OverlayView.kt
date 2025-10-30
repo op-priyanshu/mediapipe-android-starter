@@ -7,8 +7,8 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarkerResult
-import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarksConnections
 import kotlin.math.min
+import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarker
 
 class OverlayView @JvmOverloads constructor(
     context: Context,
@@ -66,12 +66,12 @@ class OverlayView @JvmOverloads constructor(
                 }
 
                 // Draw connections
-                PoseLandmarksConnections.POSE_LANDMARKS.forEach { connection ->
+                POSE_CONNECTIONS.forEach { connection ->
                     canvas.drawLine(
-                        landmark[connection.start()].x() * imageWidth * scaleFactor + offsetX,
-                        landmark[connection.start()].y() * imageHeight * scaleFactor + offsetY,
-                        landmark[connection.end()].x() * imageWidth * scaleFactor + offsetX,
-                        landmark[connection.end()].y() * imageHeight * scaleFactor + offsetY,
+                        landmark[connection.first.ordinal].x() * imageWidth * scaleFactor + offsetX,
+                        landmark[connection.first.ordinal].y() * imageHeight * scaleFactor + offsetY,
+                        landmark[connection.second.ordinal].x() * imageWidth * scaleFactor + offsetX,
+                        landmark[connection.second.ordinal].y() * imageHeight * scaleFactor + offsetY,
                         linePaint
                     )
                 }
@@ -85,5 +85,43 @@ class OverlayView @JvmOverloads constructor(
         val offsetX = (viewWidth - scaledWidth) / 2
         val offsetY = (viewHeight - scaledHeight) / 2
         return Pair(offsetX, offsetY)
+    }
+
+    companion object {
+        val POSE_CONNECTIONS = listOf(
+            Pair(PoseLandmarker.PoseLandmark.NOSE, PoseLandmarker.PoseLandmark.LEFT_EYE_INNER),
+            Pair(PoseLandmarker.PoseLandmark.LEFT_EYE_INNER, PoseLandmarker.PoseLandmark.LEFT_EYE),
+            Pair(PoseLandmarker.PoseLandmark.LEFT_EYE, PoseLandmarker.PoseLandmark.LEFT_EYE_OUTER),
+            Pair(PoseLandmarker.PoseLandmark.LEFT_EYE_OUTER, PoseLandmarker.PoseLandmark.LEFT_EAR),
+            Pair(PoseLandmarker.PoseLandmark.NOSE, PoseLandmarker.PoseLandmark.RIGHT_EYE_INNER),
+            Pair(PoseLandmarker.PoseLandmark.RIGHT_EYE_INNER, PoseLandmarker.PoseLandmark.RIGHT_EYE),
+            Pair(PoseLandmarker.PoseLandmark.RIGHT_EYE, PoseLandmarker.PoseLandmark.RIGHT_EYE_OUTER),
+            Pair(PoseLandmarker.PoseLandmark.RIGHT_EYE_OUTER, PoseLandmarker.PoseLandmark.RIGHT_EAR),
+            Pair(PoseLandmarker.PoseLandmark.MOUTH_LEFT, PoseLandmarker.PoseLandmark.MOUTH_RIGHT),
+            Pair(PoseLandmarker.PoseLandmark.LEFT_SHOULDER, PoseLandmarker.PoseLandmark.RIGHT_SHOULDER),
+            Pair(PoseLandmarker.PoseLandmark.LEFT_SHOULDER, PoseLandmarker.PoseLandmark.LEFT_ELBOW),
+            Pair(PoseLandmarker.PoseLandmark.LEFT_ELBOW, PoseLandmarker.PoseLandmark.LEFT_WRIST),
+            Pair(PoseLandmarker.PoseLandmark.LEFT_WRIST, PoseLandmarker.PoseLandmark.LEFT_PINKY),
+            Pair(PoseLandmarker.PoseLandmark.LEFT_WRIST, PoseLandmarker.PoseLandmark.LEFT_INDEX),
+            Pair(PoseLandmarker.PoseLandmark.LEFT_WRIST, PoseLandmarker.PoseLandmark.LEFT_THUMB),
+            Pair(PoseLandmarker.PoseLandmark.LEFT_SHOULDER, PoseLandmarker.PoseLandmark.LEFT_HIP),
+            Pair(PoseLandmarker.PoseLandmark.RIGHT_SHOULDER, PoseLandmarker.PoseLandmark.RIGHT_ELBOW),
+            Pair(PoseLandmarker.PoseLandmark.RIGHT_ELBOW, PoseLandmarker.PoseLandmark.RIGHT_WRIST),
+            Pair(PoseLandmarker.PoseLandmark.RIGHT_WRIST, PoseLandmarker.PoseLandmark.RIGHT_PINKY),
+            Pair(PoseLandmarker.PoseLandmark.RIGHT_WRIST, PoseLandmarker.PoseLandmark.RIGHT_INDEX),
+            Pair(PoseLandmarker.PoseLandmark.RIGHT_WRIST, PoseLandmarker.PoseLandmark.RIGHT_THUMB),
+            Pair(PoseLandmarker.PoseLandmark.RIGHT_SHOULDER, PoseLandmarker.PoseLandmark.RIGHT_HIP),
+            Pair(PoseLandmarker.PoseLandmark.LEFT_HIP, PoseLandmarker.PoseLandmark.RIGHT_HIP),
+            Pair(PoseLandmarker.PoseLandmark.LEFT_HIP, PoseLandmarker.PoseLandmark.LEFT_KNEE),
+            Pair(PoseLandmarker.PoseLandmark.RIGHT_HIP, PoseLandmarker.PoseLandmark.RIGHT_KNEE),
+            Pair(PoseLandmarker.PoseLandmark.LEFT_KNEE, PoseLandmarker.PoseLandmark.LEFT_ANKLE),
+            Pair(PoseLandmarker.PoseLandmark.RIGHT_KNEE, PoseLandmarker.PoseLandmark.RIGHT_ANKLE),
+            Pair(PoseLandmarker.PoseLandmark.LEFT_ANKLE, PoseLandmarker.PoseLandmark.LEFT_HEEL),
+            Pair(PoseLandmarker.PoseLandmark.RIGHT_ANKLE, PoseLandmarker.PoseLandmark.RIGHT_HEEL),
+            Pair(PoseLandmarker.PoseLandmark.LEFT_ANKLE, PoseLandmarker.PoseLandmark.LEFT_FOOT_INDEX),
+            Pair(PoseLandmarker.PoseLandmark.RIGHT_ANKLE, PoseLandmarker.PoseLandmark.RIGHT_FOOT_INDEX),
+            Pair(PoseLandmarker.PoseLandmark.LEFT_HEEL, PoseLandmarker.PoseLandmark.LEFT_FOOT_INDEX),
+            Pair(PoseLandmarker.PoseLandmark.RIGHT_HEEL, PoseLandmarker.PoseLandmark.RIGHT_FOOT_INDEX),
+        )
     }
 }
