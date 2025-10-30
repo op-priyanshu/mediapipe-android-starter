@@ -65,7 +65,7 @@ class OverlayView @JvmOverloads constructor(
 
                 // Note: The official PoseLandmarksConnections is not public.
                 // We are using a local copy defined in the companion object.
-                POSE_CONNECTIONS.forEach { connection ->
+                POSE_CONNECTIONS.forEach { connection: Pair<PoseLandmarker.PoseLandmark, PoseLandmarker.PoseLandmark> ->
                     canvas.drawLine(
                         landmark[connection.first.ordinal].x() * imageWidth * scaleFactor + offsetX,
                         landmark[connection.first.ordinal].y() * imageHeight * scaleFactor + offsetY,

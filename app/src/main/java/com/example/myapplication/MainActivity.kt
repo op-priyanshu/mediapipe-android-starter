@@ -18,6 +18,7 @@ import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarker
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import com.example.myapplication.ui.OverlayView
+import android.media.Image
 
 class MainActivity : AppCompatActivity() {
 
