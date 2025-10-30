@@ -6,9 +6,9 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
+import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarker
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarkerResult
 import kotlin.math.min
-import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarker
 
 class OverlayView @JvmOverloads constructor(
     context: Context,
@@ -48,7 +48,6 @@ class OverlayView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         results?.let { poseLandmarkerResult ->
-            // Calculate scaling factor
             val viewWidth = width.toFloat()
             val viewHeight = height.toFloat()
             scaleFactor = min(viewWidth / imageWidth, viewHeight / imageHeight)
@@ -56,7 +55,6 @@ class OverlayView @JvmOverloads constructor(
             val (offsetX, offsetY) = calculateOffset(viewWidth, viewHeight)
 
             for (landmark in poseLandmarkerResult.landmarks()) {
-                // Draw landmarks
                 for (normalizedLandmark in landmark) {
                     canvas.drawPoint(
                         normalizedLandmark.x() * imageWidth * scaleFactor + offsetX,
@@ -65,7 +63,8 @@ class OverlayView @JvmOverloads constructor(
                     )
                 }
 
-                // Draw connections
+                // Note: The official PoseLandmarksConnections is not public.
+                // We are using a local copy defined in the companion object.
                 POSE_CONNECTIONS.forEach { connection ->
                     canvas.drawLine(
                         landmark[connection.first.ordinal].x() * imageWidth * scaleFactor + offsetX,
